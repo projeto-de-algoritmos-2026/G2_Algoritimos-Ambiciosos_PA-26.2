@@ -3,7 +3,6 @@ import { useGameStore, Mission } from '../../store/useGameStore';
 import { recommendMissions } from '../../algorithms/contractBoard';
 import { Clock, AlertCircle, CheckCircle2 } from 'lucide-react';
 
-// Missões iniciais
 const initialMissions: Mission[] = [
   { id: 'm1', title: 'Resgate de Cientista', duration: 3, deadline: 5 },
   { id: 'm2', title: 'Recuperar IA', duration: 2, deadline: 3 },
@@ -27,35 +26,32 @@ export const ContractBoard: React.FC = () => {
   };
 
   return (
-    <div className="bg-sci-panel border border-sci-border p-4 rounded-lg shadow-lg">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-sci-accent flex items-center gap-2">
+    <div className="sci-panel">
+      <div className="flex-between" style={{ marginBottom: '1rem' }}>
+        <h2 className="sci-title">
           <AlertCircle size={20} /> Quadro de Contratos
         </h2>
-        <button 
-          onClick={handleRunAlgorithm}
-          className="bg-sci-accent/20 hover:bg-sci-accent/40 text-sci-accent px-4 py-2 rounded transition-colors text-sm font-semibold"
-        >
+        <button onClick={handleRunAlgorithm} className="sci-btn">
           Aplicar IA (EDF)
         </button>
       </div>
       
-      <p className="text-xs text-gray-400 mb-4">
+      <p className="sci-desc">
         Minimize penalidades atendendo contratos com o prazo mais próximo primeiro.
       </p>
 
-      <div className="space-y-2">
+      <div className="flex-col gap-2">
         {(sortedMissions.length > 0 ? sortedMissions : availableMissions).map((mission, index) => (
-          <div key={mission.id} className="bg-black/30 p-3 rounded border border-white/5 flex justify-between items-center">
+          <div key={mission.id} className="sci-card">
             <div>
-              <h3 className="font-medium">{mission.title}</h3>
-              <div className="text-xs text-gray-400 flex gap-3 mt-1">
-                <span className="flex items-center gap-1"><Clock size={12} /> Duração: {mission.duration} dias</span>
-                <span className="flex items-center gap-1 text-sci-alert"><AlertCircle size={12} /> Prazo: {mission.deadline} dias</span>
+              <h3>{mission.title}</h3>
+              <div className="flex gap-3 sci-text-xs sci-text-muted mt-1">
+                <span className="flex align-center gap-2"><Clock size={12} /> Duração: {mission.duration}</span>
+                <span className="flex align-center gap-2 sci-text-alert"><AlertCircle size={12} /> Prazo: {mission.deadline}</span>
               </div>
             </div>
             {sortedMissions.length > 0 && (
-              <div className="text-sci-success text-xs font-bold flex items-center gap-1">
+              <div className="flex align-center gap-2 sci-text-success sci-text-xs" style={{ fontWeight: 'bold' }}>
                 <CheckCircle2 size={14} /> Prioridade {index + 1}
               </div>
             )}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useGameStore, InventoryItem } from '../../store/useGameStore';
+import { useGameStore } from '../../store/useGameStore';
 import { optimizeDropPod, PodItem } from '../../algorithms/dropPod';
 import { Package, Zap, Scale, ArrowRight } from 'lucide-react';
 
@@ -18,7 +18,6 @@ export const DropPod: React.FC = () => {
     const result = optimizeDropPod(availableItems, maxWeight);
     setLoadout(result);
     
-    // Adiciona ao inventário global
     result.selectedItems.forEach(({ item, fraction }) => {
       addInventoryItem({
         id: item.id,
@@ -30,43 +29,42 @@ export const DropPod: React.FC = () => {
   };
 
   return (
-    <div className="bg-sci-panel border border-sci-border p-4 rounded-lg shadow-lg">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-sci-accent flex items-center gap-2">
+    <div className="sci-panel">
+      <div className="flex-between mb-4">
+        <h2 className="sci-title">
           <Package size={20} /> Drop Pod Loadout
         </h2>
-        <div className="text-xs font-bold text-gray-400 bg-black/40 px-2 py-1 rounded">
-          Max: {maxWeight}kg
-        </div>
+        <div className="badge">Max: {maxWeight}kg</div>
       </div>
 
-      <p className="text-xs text-gray-400 mb-4">
+      <p className="sci-desc">
         Algoritmo da Mochila Fracionária: Maximiza o valor de combate por peso.
       </p>
 
       <button
         onClick={handleOptimize}
-        className="w-full bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 px-4 py-2 rounded transition-colors text-sm font-semibold flex justify-center items-center gap-2 mb-4"
+        className="sci-btn primary"
+        style={{ width: '100%', marginBottom: '1.5rem' }}
       >
         <Zap size={16} /> Preencher Drop Pod
       </button>
 
       {loadout && (
-        <div className="bg-black/40 p-3 rounded border border-blue-500/20">
-          <h3 className="text-sm font-bold text-blue-400 mb-2 border-b border-white/5 pb-1 flex justify-between">
+        <div style={{ backgroundColor: 'rgba(0,0,0,0.4)', padding: '1rem', borderRadius: '6px', border: '1px solid rgba(0, 150, 255, 0.3)' }}>
+          <h3 className="flex-between sci-text-sm" style={{ color: '#60a5fa', margin: '0 0 1rem 0', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
             <span>Conteúdo da Cápsula</span>
             <span>Total: {loadout.totalValue.toFixed(0)} pts</span>
           </h3>
-          <ul className="space-y-2">
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {loadout.selectedItems.map((entry, idx) => (
-              <li key={idx} className="text-xs text-gray-300 flex justify-between items-center bg-white/5 p-1.5 rounded">
-                <span className="flex items-center gap-1">
-                  <ArrowRight size={12} className="text-sci-accent" />
-                  {entry.item.name} {(entry.fraction < 1) && <span className="text-yellow-500">({(entry.fraction * 100).toFixed(0)}%)</span>}
+              <li key={idx} className="flex-between sci-text-xs" style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: '0.5rem', borderRadius: '4px' }}>
+                <span className="flex align-center gap-2">
+                  <ArrowRight size={12} className="sci-text-accent" />
+                  {entry.item.name} {(entry.fraction < 1) && <span className="sci-text-yellow">({(entry.fraction * 100).toFixed(0)}%)</span>}
                 </span>
-                <span className="flex gap-2">
-                  <span className="text-gray-500 flex items-center gap-1"><Scale size={10}/> {(entry.item.weight * entry.fraction).toFixed(1)}kg</span>
-                  <span className="text-blue-300">{(entry.item.combatValue * entry.fraction).toFixed(0)} pts</span>
+                <span className="flex gap-3">
+                  <span className="sci-text-muted flex align-center gap-2"><Scale size={10}/> {(entry.item.weight * entry.fraction).toFixed(1)}kg</span>
+                  <span style={{ color: '#93c5fd' }}>{(entry.item.combatValue * entry.fraction).toFixed(0)} pts</span>
                 </span>
               </li>
             ))}

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { maximizeAttacks, AttackAction } from '../../algorithms/syncAttack';
 import { Crosshair, Zap, Play } from 'lucide-react';
 
-// Janela do escudo do boss: O escudo cai no turno 5 e volta no turno 20.
 const SHIELD_WINDOW = { start: 5, end: 20 };
 
 const availableAttacks: AttackAction[] = [
@@ -24,30 +23,30 @@ export const CombatUI: React.FC = () => {
   };
 
   return (
-    <div className="bg-sci-panel border border-sci-border p-4 rounded-lg shadow-lg">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-sci-alert flex items-center gap-2">
+    <div className="sci-panel">
+      <div className="flex-between mb-4">
+        <h2 className="sci-title alert">
           <Crosshair size={20} /> Ataque Sincronizado
         </h2>
-        <div className="text-sm font-bold bg-black/40 px-3 py-1.5 rounded border border-sci-alert/30 text-sci-alert">
+        <div className="badge sci-text-alert" style={{ borderColor: 'rgba(255, 42, 42, 0.3)', border: '1px solid' }}>
           Escudo Inimigo Off: T{SHIELD_WINDOW.start} a T{SHIELD_WINDOW.end}
         </div>
       </div>
 
-      <p className="text-xs text-gray-400 mb-6">
+      <p className="sci-desc">
         O algoritmo Interval Scheduling selecionará a combinação que encaixa o máximo de ataques sem sobreposição (Earliest Finish Time First).
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid-layout-2">
         <div>
-          <h3 className="text-sm font-bold text-gray-400 mb-3 uppercase tracking-widest border-b border-white/5 pb-2">
+          <h3 className="sci-text-sm sci-text-muted" style={{ textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
             Ações Disponíveis (Conflitantes)
           </h3>
-          <div className="space-y-2">
+          <div className="flex-col gap-2">
             {availableAttacks.map(atk => (
-              <div key={atk.id} className="bg-black/30 p-3 rounded border border-white/5 flex justify-between items-center">
-                <span className="text-sm text-gray-300 font-medium">{atk.name}</span>
-                <span className="text-xs text-gray-400 font-mono bg-black/50 px-2 py-1 rounded border border-white/5">
+              <div key={atk.id} className="sci-card" style={{ padding: '0.75rem' }}>
+                <span className="sci-text-sm" style={{ color: '#e5e7eb', fontWeight: 500 }}>{atk.name}</span>
+                <span className="badge sci-text-muted" style={{ border: '1px solid rgba(255,255,255,0.05)' }}>
                   T{atk.start} ➝ T{atk.end}
                 </span>
               </div>
@@ -56,23 +55,23 @@ export const CombatUI: React.FC = () => {
         </div>
 
         <div>
-          <h3 className="text-sm font-bold text-sci-accent mb-3 uppercase tracking-widest border-b border-sci-accent/20 pb-2">
+          <h3 className="sci-text-sm sci-text-accent" style={{ textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: '1px solid rgba(0,240,255,0.2)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
             Plano de Execução Otimizado
           </h3>
           
-          <div className="min-h-[220px] bg-black/50 rounded-lg border border-sci-accent/20 p-4 flex flex-col justify-center shadow-inner">
+          <div style={{ minHeight: '220px', backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.2)', padding: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             {!hasExecuted ? (
-              <div className="text-center text-gray-600 text-sm animate-pulse">
+              <div className="sci-text-sm sci-text-muted" style={{ textAlign: 'center', opacity: 0.7 }}>
                 Aguardando autorização de sincronismo...
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="flex-col gap-3">
                 {scheduledAttacks.map((atk, idx) => (
-                  <div key={atk.id} className="bg-sci-accent/10 border border-sci-accent/40 p-3 rounded flex justify-between items-center shadow-[0_0_10px_rgba(0,240,255,0.1)]">
-                    <span className="text-sm text-sci-accent font-bold flex items-center gap-2">
-                      <Zap size={16} className="text-white" /> {idx + 1}. {atk.name}
+                  <div key={atk.id} className="flex-between" style={{ backgroundColor: 'rgba(0,240,255,0.1)', border: '1px solid rgba(0,240,255,0.4)', padding: '0.75rem', borderRadius: '4px', boxShadow: '0 0 10px rgba(0,240,255,0.1)' }}>
+                    <span className="sci-text-sm sci-text-accent flex align-center gap-2" style={{ fontWeight: 'bold' }}>
+                      <Zap size={16} color="#fff" /> {idx + 1}. {atk.name}
                     </span>
-                    <span className="text-xs text-white font-mono bg-sci-accent/20 px-2 py-1 rounded">
+                    <span className="badge" style={{ backgroundColor: 'rgba(0,240,255,0.2)', color: '#fff' }}>
                       T{atk.start} ➝ T{atk.end}
                     </span>
                   </div>
@@ -83,7 +82,8 @@ export const CombatUI: React.FC = () => {
           
           <button
             onClick={handleExecute}
-            className="w-full mt-4 bg-sci-alert/20 hover:bg-sci-alert/40 text-sci-alert border border-sci-alert/30 px-4 py-3 rounded font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(255,42,42,0.4)]"
+            className="sci-btn alert primary"
+            style={{ width: '100%', marginTop: '1rem' }}
           >
             <Play size={18} /> Executar Sincronismo
           </button>

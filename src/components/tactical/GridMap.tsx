@@ -3,7 +3,7 @@ import { useGameStore, Mercenary } from '../../store/useGameStore';
 import { calculateSafeStops } from '../../algorithms/tacticalAdvance';
 import { Map, Footprints, ShieldAlert } from 'lucide-react';
 
-const SAFE_POSTS = [0, 5, 12, 18, 25, 30, 40, 50]; // Distâncias
+const SAFE_POSTS = [0, 5, 12, 18, 25, 30, 40, 50];
 const TARGET_DISTANCE = 50;
 
 export const GridMap: React.FC = () => {
@@ -25,42 +25,41 @@ export const GridMap: React.FC = () => {
   };
 
   return (
-    <div className="bg-sci-panel border border-sci-border p-4 rounded-lg shadow-lg mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-sci-accent flex items-center gap-2">
+    <div className="sci-panel">
+      <div className="flex-between mb-4">
+        <h2 className="sci-title">
           <Map size={20} /> Avanço sob Fogo (Trincheiras)
         </h2>
         {selectedMerc && (
-          <div className="text-sm font-bold text-gray-400 bg-black/40 px-3 py-1.5 rounded flex items-center gap-2 border border-white/5">
-            <Footprints size={14} className="text-sci-accent" /> AP Máximo: {selectedMerc.ap}
+          <div className="badge flex align-center gap-2" style={{ border: '1px solid rgba(255,255,255,0.05)' }}>
+            <Footprints size={14} className="sci-text-accent" /> AP Máximo: {selectedMerc.ap}
           </div>
         )}
       </div>
 
-      <div className="flex gap-4 mb-6">
+      <div className="flex gap-4 mb-4">
         {mercenaries.length === 0 && (
-          <div className="text-gray-500 text-sm italic">Nenhum mercenário recrutado. Volte à Nave-Mãe.</div>
+          <div className="sci-text-muted sci-text-sm" style={{ fontStyle: 'italic' }}>Nenhum mercenário recrutado. Volte à Nave-Mãe.</div>
         )}
         {mercenaries.map((merc) => (
           <button
             key={merc.id}
             onClick={() => { setSelectedMerc(merc); setCalculatedStops([]); setError(''); }}
-            className={`px-4 py-2 text-sm font-bold rounded transition-colors ${
+            className="sci-btn"
+            style={
               selectedMerc?.id === merc.id 
-                ? 'bg-sci-accent text-black shadow-[0_0_10px_rgba(0,240,255,0.4)]' 
-                : 'bg-black/50 text-gray-400 border border-white/10 hover:border-sci-accent/50'
-            }`}
+                ? { backgroundColor: 'var(--color-accent)', color: '#000', borderColor: 'var(--color-accent)' }
+                : { backgroundColor: 'rgba(0,0,0,0.5)', color: 'var(--color-text-muted)', borderColor: 'rgba(255,255,255,0.1)' }
+            }
           >
             {merc.name} (AP: {merc.ap})
           </button>
         ))}
       </div>
 
-      <div className="relative h-32 bg-black/50 rounded-lg flex items-center px-8 border border-white/5 overflow-hidden">
-        {/* Track Line */}
-        <div className="absolute top-1/2 left-8 right-8 h-1 bg-gray-800 -translate-y-1/2 rounded" />
+      <div className="track-container">
+        <div className="track-line" />
         
-        {/* Posts */}
         {SAFE_POSTS.map((postDistance) => {
           const isStop = calculatedStops.includes(postDistance);
           const isStart = postDistance === 0;
@@ -70,16 +69,11 @@ export const GridMap: React.FC = () => {
           return (
             <div 
               key={postDistance} 
-              className="absolute top-1/2 -translate-y-1/2 flex flex-col items-center transition-all duration-500"
+              className="track-post"
               style={{ left: `calc(2rem + calc(100% - 4rem) * ${posPercent / 100})` }}
             >
-              <div className={`w-5 h-5 rounded-full border-4 z-10 transition-colors duration-300 ${
-                isStop ? 'bg-sci-accent border-white shadow-[0_0_15px_#00f0ff] scale-125' 
-                : isStart ? 'bg-gray-400 border-gray-600'
-                : isTarget ? 'bg-sci-alert border-red-900 shadow-[0_0_15px_#ff2a2a]'
-                : 'bg-gray-900 border-gray-700'
-              }`} />
-              <div className={`text-[11px] mt-3 font-black ${isStop ? 'text-sci-accent' : isTarget ? 'text-sci-alert' : 'text-gray-600'}`}>
+              <div className={`track-node ${isStop ? 'stop' : isStart ? 'start' : isTarget ? 'target' : ''}`} />
+              <div className={`track-label ${isStop ? 'stop' : isTarget ? 'target' : ''}`}>
                 {postDistance}m
               </div>
             </div>
@@ -87,23 +81,24 @@ export const GridMap: React.FC = () => {
         })}
       </div>
 
-      <div className="mt-6 flex justify-between items-center">
+      <div className="flex-between mt-4">
         <button
           onClick={handleAdvance}
           disabled={!selectedMerc}
-          className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 px-6 py-3 rounded font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="sci-btn primary"
+          style={{ backgroundColor: 'rgba(37, 99, 235, 0.2)', color: '#60a5fa', borderColor: 'rgba(59, 130, 246, 0.3)' }}
         >
           Calcular Rota Segura (Guloso)
         </button>
         
         {error && (
-          <div className="text-sci-alert text-sm font-bold flex items-center gap-2 bg-red-900/20 border border-red-500/30 px-4 py-2 rounded">
+          <div className="msg-box alert" style={{ margin: 0 }}>
             <ShieldAlert size={16} /> {error}
           </div>
         )}
         
         {calculatedStops.length > 0 && (
-          <div className="text-sci-success text-sm font-bold bg-sci-success/10 border border-sci-success/30 px-4 py-2 rounded">
+          <div className="msg-box success" style={{ margin: 0 }}>
             Rota viável! {calculatedStops.length - 1} paradas exigidas.
           </div>
         )}

@@ -7,7 +7,7 @@ function App() {
   const { currentPhase } = useGameStore();
 
   return (
-    <div className="antialiased selection:bg-sci-accent selection:text-black">
+    <div className="app-main">
       {currentPhase === 'PHASE_1_DASHBOARD' && <DashboardPhase />}
       {currentPhase === 'PHASE_2_TACTICAL' && <TacticalPhase />}
     </div>
