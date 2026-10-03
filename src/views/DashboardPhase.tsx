@@ -6,7 +6,7 @@ import { useGameStore } from '../store/useGameStore';
 import { Rocket } from 'lucide-react';
 
 export const DashboardPhase: React.FC = () => {
-  const { setPhase, mercenaries, inventory } = useGameStore();
+  const { setPhase, mercenaries, inventory, tutorialStep, nextTutorialStep } = useGameStore();
   const isReadyToDeploy = mercenaries.length > 0 && inventory.length > 0;
 
   return (
@@ -19,7 +19,10 @@ export const DashboardPhase: React.FC = () => {
         
         <button
           disabled={!isReadyToDeploy}
-          onClick={() => setPhase('PHASE_2_TACTICAL')}
+          onClick={() => {
+            setPhase('PHASE_2_TACTICAL');
+            if (tutorialStep === 3) nextTutorialStep();
+          }}
           className="sci-btn primary"
         >
           <Rocket size={20} /> Deploy para Superfície

@@ -12,7 +12,7 @@ const initialMissions: Mission[] = [
 ];
 
 export const ContractBoard: React.FC = () => {
-  const { availableMissions, setAvailableMissions } = useGameStore();
+  const { availableMissions, setAvailableMissions, tutorialStep, nextTutorialStep } = useGameStore();
   const [sortedMissions, setSortedMissions] = useState<Mission[]>([]);
 
   useEffect(() => {
@@ -24,6 +24,7 @@ export const ContractBoard: React.FC = () => {
   const handleRunAlgorithm = () => {
     const recommended = recommendMissions(availableMissions);
     setSortedMissions(recommended);
+    if (tutorialStep === 1) nextTutorialStep();
   };
 
   return (

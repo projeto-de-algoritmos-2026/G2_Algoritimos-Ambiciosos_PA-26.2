@@ -8,7 +8,7 @@ const SAFE_POSTS = [0, 5, 12, 18, 25, 30, 40, 50];
 const TARGET_DISTANCE = 50;
 
 export const GridMap: React.FC = () => {
-  const { mercenaries } = useGameStore();
+  const { mercenaries, tutorialStep, nextTutorialStep } = useGameStore();
   const [selectedMerc, setSelectedMerc] = useState<Mercenary | null>(mercenaries[0] || null);
   const [calculatedStops, setCalculatedStops] = useState<number[]>([]);
   const [error, setError] = useState('');
@@ -19,6 +19,7 @@ export const GridMap: React.FC = () => {
     try {
       const stops = calculateSafeStops(SAFE_POSTS, selectedMerc.ap, TARGET_DISTANCE);
       setCalculatedStops(stops);
+      if (tutorialStep === 4) nextTutorialStep();
     } catch (err: any) {
       setCalculatedStops([]);
       setError(err.message || 'AP Insuficiente');

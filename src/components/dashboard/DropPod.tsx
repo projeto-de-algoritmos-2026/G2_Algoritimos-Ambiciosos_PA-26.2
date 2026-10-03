@@ -11,7 +11,7 @@ const availableItems: PodItem[] = [
 ];
 
 export const DropPod: React.FC = () => {
-  const { addInventoryItem } = useGameStore();
+  const { addInventoryItem, tutorialStep, nextTutorialStep } = useGameStore();
   const [loadout, setLoadout] = useState<ReturnType<typeof optimizeDropPod> | null>(null);
   const maxWeight = 50;
 
@@ -27,6 +27,7 @@ export const DropPod: React.FC = () => {
         combatValue: item.combatValue * fraction
       });
     });
+    if (tutorialStep === 2) nextTutorialStep();
   };
 
   return (

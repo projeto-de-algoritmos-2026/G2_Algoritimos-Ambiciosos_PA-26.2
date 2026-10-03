@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useGameStore } from '../../store/useGameStore';
 import { maximizeAttacks } from '../../algorithms/syncAttack';
 import type { AttackAction } from '../../algorithms/syncAttack';
 import { Crosshair, Zap, Play } from 'lucide-react';
@@ -14,6 +15,7 @@ const availableAttacks: AttackAction[] = [
 ];
 
 export const CombatUI: React.FC = () => {
+  const { tutorialStep, nextTutorialStep } = useGameStore();
   const [scheduledAttacks, setScheduledAttacks] = useState<AttackAction[]>([]);
   const [hasExecuted, setHasExecuted] = useState(false);
 
@@ -21,6 +23,7 @@ export const CombatUI: React.FC = () => {
     const optimized = maximizeAttacks(availableAttacks);
     setScheduledAttacks(optimized);
     setHasExecuted(true);
+    if (tutorialStep === 5) nextTutorialStep();
   };
 
   return (

@@ -30,6 +30,9 @@ interface GameState {
   inventory: InventoryItem[];
   availableMissions: Mission[];
   
+  // Tutorial State
+  tutorialStep: number;
+  
   // Ações de Transição e Gestão
   setPhase: (phase: GamePhase) => void;
   addCredits: (amount: number) => void;
@@ -37,6 +40,7 @@ interface GameState {
   recruitMercenary: (merc: Mercenary) => void;
   addInventoryItem: (item: InventoryItem) => void;
   setAvailableMissions: (missions: Mission[]) => void;
+  nextTutorialStep: () => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
@@ -45,6 +49,7 @@ export const useGameStore = create<GameState>((set) => ({
   mercenaries: [],
   inventory: [],
   availableMissions: [],
+  tutorialStep: 0,
 
   setPhase: (phase) => set({ currentPhase: phase }),
   
@@ -57,4 +62,6 @@ export const useGameStore = create<GameState>((set) => ({
   addInventoryItem: (item) => set((state) => ({ inventory: [...state.inventory, item] })),
   
   setAvailableMissions: (missions) => set({ availableMissions: missions }),
+  
+  nextTutorialStep: () => set((state) => ({ tutorialStep: state.tutorialStep + 1 })),
 }));

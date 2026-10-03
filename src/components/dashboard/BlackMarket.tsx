@@ -10,7 +10,7 @@ const mercenariesToBuy: (Mercenary & { cost: number })[] = [
 ];
 
 export const BlackMarket: React.FC = () => {
-  const { credits, removeCredits, recruitMercenary } = useGameStore();
+  const { credits, removeCredits, recruitMercenary, tutorialStep, nextTutorialStep } = useGameStore();
   const [message, setMessage] = useState('');
 
   const handleAutoBuy = (merc: typeof mercenariesToBuy[0]) => {
@@ -27,6 +27,7 @@ export const BlackMarket: React.FC = () => {
       } else {
         setMessage(`Auto-buy guloso! Gastou ${result.totalCoins} moedas [${result.coinsUsed.join(', ')}]. O ótimo seria ${optimalResult.totalCoins} moedas.`);
       }
+      if (tutorialStep === 0) nextTutorialStep();
     } else {
       setMessage('Créditos insuficientes!');
     }
