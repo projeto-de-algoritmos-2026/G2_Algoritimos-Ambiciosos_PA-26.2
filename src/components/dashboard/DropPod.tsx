@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../../store/useGameStore';
-import { optimizeDropPod, PodItem } from '../../algorithms/dropPod';
+import { optimizeDropPod } from '../../algorithms/dropPod';
+import type { PodItem } from '../../algorithms/dropPod';
 import { Package, Zap, Scale, ArrowRight } from 'lucide-react';
 
 const availableItems: PodItem[] = [

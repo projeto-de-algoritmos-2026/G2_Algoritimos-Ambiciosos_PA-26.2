@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useGameStore, Mercenary } from '../../store/useGameStore';
+import { useGameStore } from '../../store/useGameStore';
+import type { Mercenary } from '../../store/useGameStore';
 import { calculateSafeStops } from '../../algorithms/tacticalAdvance';
 import { Map, Footprints, ShieldAlert } from 'lucide-react';
 

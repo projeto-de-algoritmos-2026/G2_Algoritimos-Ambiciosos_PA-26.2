@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { maximizeAttacks, AttackAction } from '../../algorithms/syncAttack';
+import { maximizeAttacks } from '../../algorithms/syncAttack';
+import type { AttackAction } from '../../algorithms/syncAttack';
 import { Crosshair, Zap, Play } from 'lucide-react';
 
 const SHIELD_WINDOW = { start: 5, end: 20 };

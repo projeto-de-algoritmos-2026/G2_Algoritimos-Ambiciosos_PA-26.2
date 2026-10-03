@@ -1,4 +1,4 @@
-import { Mission } from '../store/useGameStore';
+import type { Mission } from '../store/useGameStore';
 
 /**
  * Mecânica 1: O Quadro de Contratos (Minimize Lateness / EDF - Earliest Deadline First)

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useGameStore, Mercenary } from '../../store/useGameStore';
+import { useGameStore } from '../../store/useGameStore';
+import type { Mercenary } from '../../store/useGameStore';
 import { greedyCoinChange, optimalCoinChange, AVAILABLE_COINS } from '../../algorithms/blackMarket';
 import { ShoppingCart, Coins, Cpu, ShieldAlert } from 'lucide-react';
 

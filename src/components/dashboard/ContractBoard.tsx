@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useGameStore, Mission } from '../../store/useGameStore';
+import { useGameStore } from '../../store/useGameStore';
+import type { Mission } from '../../store/useGameStore';
 import { recommendMissions } from '../../algorithms/contractBoard';
 import { Clock, AlertCircle, CheckCircle2 } from 'lucide-react';
 
