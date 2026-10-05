@@ -15,7 +15,7 @@ Este projeto é uma aplicação interativa (com temática tática/espacial) foca
 O objetivo principal é demonstrar a aplicação de heurísticas gulosas na resolução de problemas clássicos de otimização no mundo real e em jogos. O sistema comprova de forma visual quando essas estratégias encontram a solução global ótima com rapidez e quando falham intencionalmente (como no caso de moedas não-canônicas no mercado negro).
 
 ## Vídeo de apresentação
-[Adicione o link do vídeo aqui]
+[Assistir ao Vídeo de Apresentação](https://drive.google.com/file/d/1gB3KyhPKStZqtXkHP_RGjaf0g-OHgFyt/view?usp=sharing)
 
 ## Instalação
 **Linguagem**: TypeScript / JavaScript<br>
