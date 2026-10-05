@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import { maximizeAttacks } from '../../algorithms/syncAttack';
 import type { AttackAction } from '../../algorithms/syncAttack';
-import { Crosshair, Zap, Play } from 'lucide-react';
+import { Crosshair, Zap, BarChart3, AlertTriangle, Check } from 'lucide-react';
 
 const SHIELD_WINDOW = { start: 5, end: 20 };
 
@@ -12,18 +12,56 @@ const availableAttacks: AttackAction[] = [
   { id: 'atk3', name: 'Raio Laser', start: 11, end: 16 },
   { id: 'atk4', name: 'Recarga Tática', start: 10, end: 13 },
   { id: 'atk5', name: 'Míssil Pesado', start: 14, end: 19 },
+  { id: 'atk6', name: 'Pulso EMP', start: 6, end: 8 },
+  { id: 'atk7', name: 'Lança Chamas', start: 13, end: 17 },
 ];
 
 export const CombatUI: React.FC = () => {
   const { tutorialStep, nextTutorialStep } = useGameStore();
-  const [scheduledAttacks, setScheduledAttacks] = useState<AttackAction[]>([]);
-  const [hasExecuted, setHasExecuted] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showComparison, setShowComparison] = useState(false);
 
-  const handleExecute = () => {
-    const optimized = maximizeAttacks(availableAttacks);
-    setScheduledAttacks(optimized);
-    setHasExecuted(true);
+  const selectedAttacks = availableAttacks.filter(a => selectedIds.has(a.id));
+  const optimalAttacks = useMemo(() => maximizeAttacks(availableAttacks), []);
+
+  // Detect conflicts (overlapping attacks)
+  const conflicts = useMemo(() => {
+    const conflictPairs: [string, string][] = [];
+    const selected = [...selectedAttacks].sort((a, b) => a.start - b.start);
+    for (let i = 0; i < selected.length; i++) {
+      for (let j = i + 1; j < selected.length; j++) {
+        if (selected[j].start < selected[i].end) {
+          conflictPairs.push([selected[i].id, selected[j].id]);
+        }
+      }
+    }
+    return conflictPairs;
+  }, [selectedIds]);
+
+  const hasConflicts = conflicts.length > 0;
+  const conflictIds = new Set(conflicts.flat());
+
+  const toggleAttack = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
     if (tutorialStep === 5) nextTutorialStep();
+  };
+
+  const timelineStart = SHIELD_WINDOW.start;
+  const timelineEnd = SHIELD_WINDOW.end;
+  const timeRange = timelineEnd - timelineStart;
+
+  const getBarStyle = (atk: AttackAction) => {
+    const left = ((atk.start - timelineStart) / timeRange) * 100;
+    const width = ((atk.end - atk.start) / timeRange) * 100;
+    return { left: `${Math.max(0, left)}%`, width: `${Math.min(100 - Math.max(0, left), width)}%` };
   };
 
   return (
@@ -33,66 +71,119 @@ export const CombatUI: React.FC = () => {
           <Crosshair size={20} /> Ataque Sincronizado
         </h2>
         <div className="badge sci-text-alert" style={{ borderColor: 'rgba(255, 42, 42, 0.3)', border: '1px solid' }}>
-          Escudo Inimigo Off: T{SHIELD_WINDOW.start} a T{SHIELD_WINDOW.end}
+          Escudo Off: T{SHIELD_WINDOW.start} — T{SHIELD_WINDOW.end}
         </div>
       </div>
 
       <p className="sci-desc">
-        O algoritmo Interval Scheduling selecionará a combinação que encaixa o máximo de ataques sem sobreposição (Earliest Finish Time First).
+        Selecione ataques na <strong>timeline</strong> para executar na janela de vulnerabilidade. Evite sobreposições!
+        Depois compare com o <strong>Interval Scheduling</strong>.
       </p>
 
-      <div className="grid-layout-2">
-        <div>
-          <h3 className="sci-text-sm sci-text-muted" style={{ textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
-            Ações Disponíveis (Conflitantes)
-          </h3>
-          <div className="flex-col gap-2">
-            {availableAttacks.map(atk => (
-              <div key={atk.id} className="sci-card" style={{ padding: '0.75rem' }}>
-                <span className="sci-text-sm" style={{ color: '#e5e7eb', fontWeight: 500 }}>{atk.name}</span>
-                <span className="badge sci-text-muted" style={{ border: '1px solid rgba(255,255,255,0.05)' }}>
-                  T{atk.start} ➝ T{atk.end}
-                </span>
-              </div>
-            ))}
-          </div>
+      {/* Timeline */}
+      <div className="attack-timeline">
+        <div className="timeline-header">
+          {Array.from({ length: timeRange + 1 }, (_, i) => (
+            <span key={i} className="timeline-tick">T{timelineStart + i}</span>
+          ))}
         </div>
+        <div className="timeline-body">
+          {availableAttacks.map(atk => {
+            const isSelected = selectedIds.has(atk.id);
+            const isConflict = conflictIds.has(atk.id) && isSelected;
+            const barStyle = getBarStyle(atk);
 
-        <div>
-          <h3 className="sci-text-sm sci-text-accent" style={{ textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: '1px solid rgba(0,240,255,0.2)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
-            Plano de Execução Otimizado
-          </h3>
-          
-          <div style={{ minHeight: '220px', backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.2)', padding: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            {!hasExecuted ? (
-              <div className="sci-text-sm sci-text-muted" style={{ textAlign: 'center', opacity: 0.7 }}>
-                Aguardando autorização de sincronismo...
-              </div>
-            ) : (
-              <div className="flex-col gap-3">
-                {scheduledAttacks.map((atk, idx) => (
-                  <div key={atk.id} className="flex-between" style={{ backgroundColor: 'rgba(0,240,255,0.1)', border: '1px solid rgba(0,240,255,0.4)', padding: '0.75rem', borderRadius: '4px', boxShadow: '0 0 10px rgba(0,240,255,0.1)' }}>
-                    <span className="sci-text-sm sci-text-accent flex align-center gap-2" style={{ fontWeight: 'bold' }}>
-                      <Zap size={16} color="#fff" /> {idx + 1}. {atk.name}
-                    </span>
-                    <span className="badge" style={{ backgroundColor: 'rgba(0,240,255,0.2)', color: '#fff' }}>
-                      T{atk.start} ➝ T{atk.end}
-                    </span>
+            return (
+              <div key={atk.id} className="timeline-row">
+                <div className="timeline-label">{atk.name}</div>
+                <div className="timeline-track">
+                  <div
+                    className={`timeline-bar ${isSelected ? 'selected' : ''} ${isConflict ? 'conflict' : ''}`}
+                    style={barStyle}
+                    onClick={() => toggleAttack(atk.id)}
+                    title={`T${atk.start} → T${atk.end} — clique para ${isSelected ? 'remover' : 'selecionar'}`}
+                  >
+                    <span className="timeline-bar-label">T{atk.start}–T{atk.end}</span>
                   </div>
-                ))}
+                </div>
               </div>
-            )}
-          </div>
-          
-          <button
-            onClick={handleExecute}
-            className="sci-btn alert primary"
-            style={{ width: '100%', marginTop: '1rem' }}
-          >
-            <Play size={18} /> Executar Sincronismo
-          </button>
+            );
+          })}
         </div>
       </div>
+
+      {/* Status */}
+      <div className="flex-between" style={{ marginTop: '1rem' }}>
+        <span className="sci-text-sm">
+          Selecionados: <strong className="sci-text-accent">{selectedAttacks.length}</strong>
+        </span>
+        {hasConflicts && (
+          <div className="flex align-center gap-2 sci-text-alert sci-text-sm" style={{ fontWeight: 'bold' }}>
+            <AlertTriangle size={16} /> {conflicts.length} conflito{conflicts.length > 1 ? 's' : ''}!
+          </div>
+        )}
+        {!hasConflicts && selectedAttacks.length > 0 && (
+          <div className="flex align-center gap-2 sci-text-success sci-text-sm" style={{ fontWeight: 'bold' }}>
+            <Check size={16} /> Sem conflitos!
+          </div>
+        )}
+      </div>
+
+      {hasConflicts && (
+        <div className="msg-box alert" style={{ marginTop: '0.75rem' }}>
+          <AlertTriangle size={16} />
+          <span>Ataques sobrepostos! Remova ataques conflitantes para uma execução válida.</span>
+        </div>
+      )}
+
+      {/* Comparison */}
+      <button
+        onClick={() => setShowComparison(!showComparison)}
+        className="sci-btn"
+        style={{ width: '100%', marginTop: '1rem', color: '#a78bfa', borderColor: '#a78bfa', backgroundColor: 'rgba(167, 139, 250, 0.1)' }}
+      >
+        <BarChart3 size={16} /> {showComparison ? 'Ocultar' : 'Comparar com'} Interval Scheduling
+      </button>
+
+      {showComparison && (
+        <div className="comparison-grid" style={{ marginTop: '1rem' }}>
+          <div className={`comparison-card ${!hasConflicts && selectedAttacks.length >= optimalAttacks.length ? 'optimal' : ''}`}>
+            <h4>Sua Seleção</h4>
+            <div className="comparison-coins">{selectedAttacks.length} ataques</div>
+            <div className="sci-text-xs sci-text-muted">
+              {hasConflicts ? `⚠ ${conflicts.length} conflito(s)` : '✓ Sem conflitos'}
+            </div>
+          </div>
+          <div className="comparison-card optimal">
+            <h4>Interval Scheduling</h4>
+            <div className="comparison-coins">{optimalAttacks.length} ataques</div>
+            <div className="sci-text-xs sci-text-muted">
+              {optimalAttacks.map(a => a.name).join(', ')}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showComparison && !hasConflicts && selectedAttacks.length >= optimalAttacks.length && (
+        <div className="msg-box success" style={{ marginTop: '0.75rem', marginBottom: 0 }}>
+          <Zap size={16} />
+          <span>Excelente! Sua seleção encaixa tantos ataques quanto o Interval Scheduling!</span>
+        </div>
+      )}
+
+      {showComparison && (!hasConflicts && selectedAttacks.length < optimalAttacks.length) && (
+        <div className="msg-box warning" style={{ marginTop: '0.75rem', marginBottom: 0 }}>
+          <Zap size={16} />
+          <span>O algoritmo (Earliest Finish Time) encaixa {optimalAttacks.length - selectedAttacks.length} ataque(s) a mais sem sobreposição!</span>
+        </div>
+      )}
+
+      {showComparison && hasConflicts && (
+        <div className="msg-box warning" style={{ marginTop: '0.75rem', marginBottom: 0 }}>
+          <AlertTriangle size={16} />
+          <span>Resolva os conflitos primeiro para uma comparação justa com o algoritmo!</span>
+        </div>
+      )}
     </div>
   );
 };

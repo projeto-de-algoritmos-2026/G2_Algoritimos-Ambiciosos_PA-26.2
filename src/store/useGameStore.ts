@@ -37,15 +37,20 @@ interface GameState {
   setPhase: (phase: GamePhase) => void;
   addCredits: (amount: number) => void;
   removeCredits: (amount: number) => void;
+  setCredits: (amount: number) => void;
   recruitMercenary: (merc: Mercenary) => void;
+  removeMercenary: (id: string) => void;
   addInventoryItem: (item: InventoryItem) => void;
+  removeInventoryItem: (id: string) => void;
+  setInventory: (items: InventoryItem[]) => void;
+  clearInventory: () => void;
   setAvailableMissions: (missions: Mission[]) => void;
   nextTutorialStep: () => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
   currentPhase: 'PHASE_1_DASHBOARD',
-  credits: 150, // Créditos iniciais
+  credits: 200, // Créditos iniciais (aumentados para mais liberdade de escolha)
   mercenaries: [],
   inventory: [],
   availableMissions: [],
@@ -57,9 +62,19 @@ export const useGameStore = create<GameState>((set) => ({
   
   removeCredits: (amount) => set((state) => ({ credits: Math.max(0, state.credits - amount) })),
   
+  setCredits: (amount) => set({ credits: amount }),
+  
   recruitMercenary: (merc) => set((state) => ({ mercenaries: [...state.mercenaries, merc] })),
   
+  removeMercenary: (id) => set((state) => ({ mercenaries: state.mercenaries.filter(m => m.id !== id) })),
+  
   addInventoryItem: (item) => set((state) => ({ inventory: [...state.inventory, item] })),
+  
+  removeInventoryItem: (id) => set((state) => ({ inventory: state.inventory.filter(i => i.id !== id) })),
+  
+  setInventory: (items) => set({ inventory: items }),
+  
+  clearInventory: () => set({ inventory: [] }),
   
   setAvailableMissions: (missions) => set({ availableMissions: missions }),
   

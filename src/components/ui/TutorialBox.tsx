@@ -3,13 +3,13 @@ import { useGameStore } from '../../store/useGameStore';
 import { Info } from 'lucide-react';
 
 const steps = [
-  "Bem-vindo à Mother Ship! Seu objetivo é preparar sua guilda. Primeiro, vá ao Mercado Negro e compre um mercenário.",
-  "Ótimo! Agora vamos ao Quadro de Contratos. Clique em 'Aplicar IA' para ordenar as missões pelo prazo.",
-  "Perfeito. Agora prepare o Drop Pod com suprimentos. Clique em 'Preencher Drop Pod'.",
+  "Bem-vindo à Mother Ship! Vá ao Mercado Negro, escolha mercenários e adicione ao carrinho.",
+  "Agora vá ao Quadro de Contratos. Arraste os contratos para reordená-los e minimize o atraso!",
+  "Prepare o Drop Pod manualmente. Escolha os suprimentos, ajuste frações e maximize o valor de combate.",
   "Você está pronto! Clique em 'Deploy para Superfície' para ir ao combate.",
   "Chegamos ao campo de batalha. Escolha um recruta e clique em 'Calcular Rota Segura' para ele avançar.",
-  "Por fim, maximize seus ataques na janela vulnerável. Clique em 'Executar Sincronismo'!",
-  "Parabéns! Você concluiu o tutorial e o fluxo básico do jogo."
+  "Por fim, selecione manualmente os ataques na timeline. Evite sobreposições e maximize seus ataques!",
+  "Parabéns! Você concluiu o tutorial. Use os botões 'Comparar' para ver como a IA faria!"
 ];
 
 export const TutorialBox: React.FC = () => {

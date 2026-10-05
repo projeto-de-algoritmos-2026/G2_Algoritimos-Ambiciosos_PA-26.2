@@ -3,7 +3,7 @@ import { ContractBoard } from '../components/dashboard/ContractBoard';
 import { BlackMarket } from '../components/dashboard/BlackMarket';
 import { DropPod } from '../components/dashboard/DropPod';
 import { useGameStore } from '../store/useGameStore';
-import { Rocket } from 'lucide-react';
+import { Rocket, Users } from 'lucide-react';
 
 export const DashboardPhase: React.FC = () => {
   const { setPhase, mercenaries, inventory, tutorialStep, nextTutorialStep } = useGameStore();
@@ -16,41 +16,46 @@ export const DashboardPhase: React.FC = () => {
           <h1 className="page-title">Mother Ship</h1>
           <p className="page-subtitle">Gestão de Guilda</p>
         </div>
-        
-        <button
-          disabled={!isReadyToDeploy}
-          onClick={() => {
-            setPhase('PHASE_2_TACTICAL');
-            if (tutorialStep === 3) nextTutorialStep();
-          }}
-          className="sci-btn primary"
-        >
-          <Rocket size={20} /> Deploy para Superfície
-        </button>
+
+        <div className="flex align-center gap-3">
+          {mercenaries.length > 0 && (
+            <div className="badge flex align-center gap-2" style={{ border: '1px solid rgba(0, 255, 136, 0.3)', color: 'var(--color-success)' }}>
+              <Users size={14} /> {mercenaries.length} recruta{mercenaries.length > 1 ? 's' : ''}
+            </div>
+          )}
+          <button
+            disabled={!isReadyToDeploy}
+            onClick={() => {
+              setPhase('PHASE_2_TACTICAL');
+              if (tutorialStep === 3) nextTutorialStep();
+            }}
+            className="sci-btn primary"
+          >
+            <Rocket size={20} /> Deploy para Superfície
+          </button>
+        </div>
       </header>
 
-      <div className="container grid-layout">
-        <div>
+      <div className="container dashboard-grid">
+        <div className="flex-col gap-4">
           <BlackMarket />
-          
-          <div className="sci-panel" style={{ marginTop: '1.5rem', padding: '1rem' }}>
-            <h3 className="sci-text-sm sci-text-muted" style={{ textTransform: 'uppercase', marginBottom: '1rem', marginTop: 0 }}>
-              Seu Esquadrão
-            </h3>
-            {mercenaries.length === 0 ? (
-              <p className="sci-text-xs sci-text-muted" style={{ margin: 0 }}>Nenhum recruta.</p>
-            ) : (
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+
+          {mercenaries.length > 0 && (
+            <div className="sci-panel" style={{ padding: '1rem' }}>
+              <h3 className="sci-text-sm sci-text-muted" style={{ textTransform: 'uppercase', marginBottom: '0.75rem', marginTop: 0 }}>
+                Seu Esquadrão ({mercenaries.length})
+              </h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                 {mercenaries.map(m => (
-                  <li key={m.id} className="sci-text-xs sci-text-accent" style={{ backgroundColor: 'rgba(0, 240, 255, 0.1)', padding: '0.5rem', borderRadius: '4px' }}>
-                    {m.name} ({m.role})
-                  </li>
+                  <div key={m.id} className="badge sci-text-accent" style={{ border: '1px solid rgba(0, 240, 255, 0.2)', padding: '0.35rem 0.75rem' }}>
+                    {m.name} <span className="sci-text-muted">({m.role})</span>
+                  </div>
                 ))}
-              </ul>
-            )}
-          </div>
+              </div>
+            </div>
+          )}
         </div>
-        
+
         <div className="flex-col gap-4">
           <ContractBoard />
           <DropPod />
